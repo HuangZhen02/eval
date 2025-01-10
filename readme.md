@@ -13,6 +13,13 @@ PS：
 
 如果需要添加新的测试集，可以模仿已经存在的benchmark的格式，在`./data`下添加。
 
+目前已经有的benchmark整理：
+AIME -> test.jsonl
+MATH -> test_500.jsonl
+MATH2024 -> test.jsonl
+
+
+
 #### 设置prompt文件
 
 在测试**数学题**时，我们采用qwen-instruct的模版：
