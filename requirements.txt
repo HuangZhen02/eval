@@ -1,5 +1,5 @@
 # common
-vllm
+vllm<=0.6.1
 tqdm
 datasets
 torch
