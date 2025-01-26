@@ -496,16 +496,10 @@ def extract_theoremqa_answer(pred: str, answer_flag: bool = True):
     return pred
 
 
-def extract_answer(pred_str, data_name="", use_last_number=True, use_sharp=False):
+def extract_answer(pred_str, use_last_number=True):
     pred_str = pred_str.replace("\u043a\u0438", "")
     
-    if data_name in ["mmlu_stem", "sat_math", "aqua", "gaokao2023"]:
-        # TODO check multiple choice
-        return choice_answer_clean(pred_str)
-    
-    if use_sharp:
-        ans = pred_str.split("####")[-1]
-        return ans.strip("*").strip().strip("*")
+    pred = ""
     
     if "boxed" in pred_str:
         ans = pred_str.split("boxed")[-1]
@@ -529,39 +523,6 @@ def extract_answer(pred_str, data_name="", use_last_number=True, use_sharp=False
             a = ans.split("$")[0].strip()
         pred = a
 
-    elif "final answer is $" in pred_str and "$. I hope" in pred_str:
-        # minerva_math
-        tmp = pred_str.split("final answer is $", 1)[1]
-        pred = tmp.split("$. I hope", 1)[0].strip()
-    elif "he answer is" in pred_str:
-        pred = pred_str.split("he answer is")[-1].strip()
-    elif "final answer is" in pred_str:
-        pred = pred_str.split("final answer is")[-1].strip()
-    elif "答案是" in pred_str:
-        # Handle Chinese few-shot multiple choice problem answer extraction
-        pred = pred_str.split("答案是")[1].strip().split("\n\n")[0].strip()
-    else:  # use the last number
-        if use_last_number:
-            pattern = "-?\d*\.?\d+"
-            pred = re.findall(pattern, pred_str.replace(",", ""))
-            if len(pred) >= 1:
-                pred = pred[-1]
-            else:
-                pred = ""
-        else:
-            pred = ""
-
-    # choice answer
-    if (
-        data_name in ["sat_math", "aqua"]
-        or "mmlu" in data_name
-    ):
-        tmp = re.findall(r"\b(A|B|C|D|E)\b", pred.upper())
-        if tmp:
-            pred = tmp[-1]
-        else:
-            pred = pred.strip().strip(".")
-
     # multiple line
     # pred = pred.split("\n")[0]
     pred = re.sub(r"\n\s*", "", pred)
@@ -580,7 +541,9 @@ STRIP_EXCEPTIONS = ["carp_en", "minerva_math"]
 
 def parse_ground_truth(example: Dict[str, Any], data_name):
     if "answer" in example:
-        return "", str(example["answer"])
+        return None, str(example["answer"])
+    else:
+        return None, None
 
 
 def parse_question(example, data_name=None):
