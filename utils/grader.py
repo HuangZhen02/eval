@@ -92,7 +92,7 @@ def math_equal(
     reference: Union[float, str],
     include_percentage: bool = True,
     is_close: bool = True,
-    timeout: bool = False,
+    timeout: bool = True,
     depth: int = 0,
     max_depth: int = 5
 ) -> bool:
@@ -415,7 +415,7 @@ def symbolic_equal_process(a, b, output_queue):
     output_queue.put(result)
 
 
-def call_with_timeout(func, *args, timeout=1, **kwargs):
+def call_with_timeout(func, *args, timeout=3, **kwargs):
     output_queue = multiprocessing.Queue()
     process_args = args + (output_queue,)
     process = multiprocessing.Process(target=func, args=process_args, kwargs=kwargs)
